@@ -182,6 +182,23 @@ def get_tiffin_calendar(
 
     return calendar
 
+@app.get("/admin/users")
+def list_users(
+    current_user: User = Depends(admin_required),
+    db: Session = Depends(get_db),
+):
+    users = db.query(User).all()
+
+    return [
+        {
+            "id": u.id,
+            "name": u.name,
+            "email": u.email,
+            "role": u.role
+        }
+        for u in users
+    ]
+
 @app.post("/admin/tiffin/update")
 def update_tiffin_status(
     payload: TiffinStatusUpdate,

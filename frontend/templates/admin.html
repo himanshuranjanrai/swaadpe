@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SwaadPe | Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen p-4">
+
+  <div class="max-w-3xl mx-auto bg-white rounded-xl shadow p-6">
+    <h1 class="text-2xl font-bold mb-4 text-center">
+      👨‍🍳 Admin Dashboard – Tiffin Control
+    </h1>
+
+    <!-- User Select -->
+    <label class="block mb-2 font-semibold">Select User</label>
+    <select id="userSelect" class="w-full border p-2 rounded mb-4"></select>
+
+    <!-- Date -->
+    <label class="block mb-2 font-semibold">Select Date</label>
+    <input type="date" id="dateInput" class="w-full border p-2 rounded mb-4" />
+
+    <!-- Lunch -->
+    <div class="flex items-center mb-2">
+      <input type="checkbox" id="lunch" class="mr-2" />
+      <label for="lunch">🍛 Lunch Delivered</label>
+    </div>
+
+    <!-- Dinner -->
+    <div class="flex items-center mb-4">
+      <input type="checkbox" id="dinner" class="mr-2" />
+      <label for="dinner">🍽️ Dinner Delivered</label>
+    </div>
+
+    <!-- Button -->
+    <button
+      onclick="updateTiffin()"
+      class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
+    >
+      Update Tiffin Status
+    </button>
+
+    <p id="msg" class="text-center mt-4 font-semibold"></p>
+  </div>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:8000";
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Admin token missing. Please login.");
+    }
+
+    async function loadUsers() {
+      const res = await fetch(`${API_BASE}/admin/users`, {
+        headers: {
+          "Authorization": "Bearer " + token
+        }
+      });
+
+      if (!res.ok) {
+        alert("Unauthorized. Admin access required.");
+        return;
+      }
+
+      const users = await res.json();
+      const select = document.getElementById("userSelect");
+
+      users.forEach(u => {
+        const opt = document.createElement("option");
+        opt.value = u.id;
+        opt.textContent = `${u.name} (${u.email})`;
+        select.appendChild(opt);
+      });
+    }
+
+    async function updateTiffin() {
+      const userId = document.getElementById("userSelect").value;
+      const date = document.getElementById("dateInput").value;
+      const lunch = document.getElementById("lunch").checked;
+      const dinner = document.getElementById("dinner").checked;
+
+      if (!date) {
+        alert("Please select date");
+        return;
+      }
+
+      const res = await fetch(
+        `${API_BASE}/admin/tiffin/update?user_id=${userId}`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ date, lunch, dinner })
+        }
+      );
+
+      const msg = document.getElementById("msg");
+
+      if (res.ok) {
+        msg.textContent = "✅ Tiffin status updated";
+        msg.className = "text-green-600";
+      } else {
+        msg.textContent = "❌ Update failed";
+        msg.className = "text-red-600";
+      }
+    }
+
+    loadUsers();
+  </script>
+
+</body>
+</html>
