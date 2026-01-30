@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
@@ -49,6 +51,8 @@ app.add_middleware(
     allow_methods=["*"],  # allows OPTIONS, GET, POST, etc.
     allow_headers=["*"],  # allows Authorization header
 )
+app.mount("/app", StaticFiles(directory="frontend/templates", html=True), name="app")
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 # =========================
@@ -120,6 +124,9 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
         "role": role
     }
 
+@app.get("/app")
+def app_root():
+    return RedirectResponse("/app/login.html")
 
 
 @app.post("/login", response_model=TokenResponse)
@@ -141,6 +148,7 @@ def login(
         "access_token": token,
         "token_type": "bearer"
     }
+
 
 
 @app.get("/me")
