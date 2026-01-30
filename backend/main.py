@@ -7,7 +7,7 @@ from pathlib import Path
 from datetime import date, timedelta
 from backend.models import TiffinStatus
 from backend.schemas import TiffinStatusOut, TiffinStatusUpdate
-
+from fastapi.middleware.cors import CORSMiddleware
 from backend.database import SessionLocal, engine, Base
 from backend.models import User
 from backend.schemas import UserCreate, TokenResponse
@@ -42,6 +42,13 @@ app = FastAPI(
     version="1.0.0"
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # allow all for now
+    allow_credentials=True,
+    allow_methods=["*"],  # allows OPTIONS, GET, POST, etc.
+    allow_headers=["*"],  # allows Authorization header
+)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 # =========================
