@@ -19,3 +19,18 @@ class UserLogin(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+class TiffinStatusOut(BaseModel):
+    date: date
+    lunch: bool
+    dinner: bool
+
+    class Config:
+        from_attributes = True
+
+
+class TiffinStatusUpdate(BaseModel):
+    date: date
+    lunch: bool | None = None
+    dinner: bool | None = None

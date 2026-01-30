@@ -107,6 +107,10 @@ ACCESS_TOKEN_EXPIRE_HOURS=24
 DATABASE_URL=<YOUR DATABASE URL>
 
 # =========================
+# DATABASE
+# =========================
+ADMIN_EMAIL=<ADMIN_EMAIL>
+# =========================
 # APP CONFIG
 # =========================
 APP_NAME=SwaadPe
